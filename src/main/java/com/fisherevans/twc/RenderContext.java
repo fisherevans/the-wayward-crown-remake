@@ -1,27 +1,27 @@
 package com.fisherevans.twc;
 
 public class RenderContext {
-    private static final int BASE_WIDTH = 480;
-    private static final int BASE_HEIGHT = 270;
+    private static final float BASE_WIDTH = 480;
+    private static final float BASE_HEIGHT = 270;
 
-    public final int width, height;
-    public final int actualScale;
+    public final float width, height;
+    public final float actualScale;
 
-    public RenderContext(int width, int height, int actualScale) {
+    public RenderContext(float width, float height, float actualScale) {
         this.width = width;
         this.height = height;
         this.actualScale = actualScale;
     }
 
-    public RenderContext(int actualScale) {
+    public RenderContext(float actualScale) {
         this(BASE_WIDTH, BASE_HEIGHT, actualScale);
     }
 
-    public int getActualWidth() {
+    public float getActualWidth() {
         return width * actualScale;
     }
 
-    public int getActualHeight() {
+    public float getActualHeight() {
         return height * actualScale;
     }
 }

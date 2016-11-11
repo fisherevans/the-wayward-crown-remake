@@ -1,4 +1,4 @@
-package com.fisherevans.twc;
+package com.fisherevans.twc.game;
 
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;

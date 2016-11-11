@@ -1,7 +1,7 @@
-package com.fisherevans.twc.launcher;
+package com.fisherevans.twc;
 
-import com.fisherevans.twc.RenderContext;
-import com.fisherevans.twc.TWCGame;
+import com.fisherevans.twc.game.TWCGame;
+import com.fisherevans.twc.game.states.splash.SplashState;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 import org.slf4j.Logger;
@@ -9,30 +9,28 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-public class TWCContainer {
-    private static final Logger log = LoggerFactory.getLogger(TWCContainer.class);
+public class Launcher {
+    private static final Logger log = LoggerFactory.getLogger(Launcher.class);
 
     private final RenderContext renderContext;
     private final boolean fullscreen;
     private final TWCGame game;
     private final AppGameContainer gameContainer;
 
-    private TWCContainer(RenderContext renderContext, boolean fullscreen) throws SlickException {
+    private Launcher(RenderContext renderContext, boolean fullscreen) throws SlickException {
         this.renderContext = renderContext;
         this.fullscreen = fullscreen;
-
-        game = new TWCGame("TWC");
-
+        game = new TWCGame("TWC", renderContext, new SplashState());
         gameContainer = new AppGameContainer(game);
-        gameContainer.setDisplayMode(renderContext.getActualWidth(), renderContext.getActualHeight(), fullscreen);
+        gameContainer.setDisplayMode(
+                (int) renderContext.getActualWidth(),
+                (int) renderContext.getActualHeight(),
+                fullscreen);
         gameContainer.setUpdateOnlyWhenVisible(false);
         gameContainer.setAlwaysRender(true);
         gameContainer.setShowFPS(false);
-        //gameContainer.setMouseGrabbed(true);
-        //gameContainer.setIcon("res/img/icon.png");
         gameContainer.setVSync(true);
         gameContainer.setTargetFrameRate(60);
-
     }
 
     public void start() throws SlickException {
@@ -42,6 +40,6 @@ public class TWCContainer {
     public static void main(String[] args) throws SlickException {
         System.setProperty("org.lwjgl.librarypath", new File("target/natives").getAbsolutePath());
         System.setProperty("com.apple.mrj.application.apple.menu.about.name", "The Wayward Crown");
-        (new TWCContainer(new RenderContext(1), false)).start();
+        (new Launcher(new RenderContext(2), false)).start();
     }
 }
