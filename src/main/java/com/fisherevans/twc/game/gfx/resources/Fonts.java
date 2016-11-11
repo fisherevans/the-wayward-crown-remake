@@ -1,4 +1,4 @@
-package com.fisherevans.twc.game.gfx;
+package com.fisherevans.twc.game.gfx.resources;
 
 import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.Image;

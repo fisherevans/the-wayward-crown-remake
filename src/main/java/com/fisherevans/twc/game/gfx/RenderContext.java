@@ -1,4 +1,4 @@
-package com.fisherevans.twc;
+package com.fisherevans.twc.game.gfx;
 
 public class RenderContext {
     private static final float BASE_WIDTH = 480;

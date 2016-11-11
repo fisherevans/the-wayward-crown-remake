@@ -2,8 +2,10 @@ package com.fisherevans.twc.game.states.splash;
 
 import com.fisherevans.twc.game.TWCGame;
 import com.fisherevans.twc.game.TWCState;
-import com.fisherevans.twc.game.gfx.Fonts;
-import com.fisherevans.twc.game.gfx.Text;
+import com.fisherevans.twc.game.gfx.resources.Fonts;
+import com.fisherevans.twc.game.gfx.util.Text;
+import com.fisherevans.twc.game.gfx.util.Text.AlignHorz;
+import com.fisherevans.twc.game.gfx.util.Text.AlignVert;
 import org.newdawn.slick.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +20,12 @@ public class SplashState implements TWCState {
 
     @Override
     public void init(TWCGame game) throws SlickException {
+        log.info("Initializing splash state");
         bigFont = Fonts.DEFAULT_4.load();
         smallFont = Fonts.MINI_NUMBERS.load();
-        int width = 400;
-        mainText = new Text.Builder(bigFont, "The Wayward Crown")
-                .aligned(Text.AlignHorz.CENTER, Text.AlignVert.MIDDLE)
-                .topLeftPosition(game.getRenderContext().width/2f - width/2f, game.getRenderContext().height/2f)
-                .size(width, 0)
-                .wrapped(true)
+        mainText = new Text.Builder(bigFont, "The Wayward\nCrown")
+                .aligned(AlignHorz.CENTER, AlignVert.MIDDLE)
+                .position(game.getRenderContext().width/2f, game.getRenderContext().height/2f)
                 .lineHeight(1.15f)
                 .build();
     }
@@ -42,6 +42,11 @@ public class SplashState implements TWCState {
 
     @Override
     public void render(TWCGame game, Graphics graphics) throws SlickException {
+
+        graphics.setColor(new Color(0.5f, 0, 0));
+        int pad = 75;
+        graphics.drawRect(pad, 0, game.getRenderContext().width-(pad*2), game.getRenderContext().height/2f);
+
         final float brightness = (float) (Math.sin(Math.toRadians(degrees)) + 1f)/4f + 0.5f;
         final Color color = new Color(brightness, brightness, brightness);
         mainText.draw(color);

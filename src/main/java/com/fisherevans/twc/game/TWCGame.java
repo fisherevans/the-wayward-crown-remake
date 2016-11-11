@@ -1,7 +1,7 @@
 package com.fisherevans.twc.game;
 
-import com.fisherevans.twc.RenderContext;
-import com.fisherevans.twc.game.gfx.Fonts;
+import com.fisherevans.twc.game.gfx.RenderContext;
+import com.fisherevans.twc.game.gfx.resources.Fonts;
 import org.newdawn.slick.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

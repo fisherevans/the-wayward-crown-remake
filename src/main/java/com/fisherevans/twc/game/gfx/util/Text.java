@@ -1,6 +1,7 @@
-package com.fisherevans.twc.game.gfx;
+package com.fisherevans.twc.game.gfx.util;
 
 import com.fisherevans.twc.game.states.splash.SplashState;
+import com.fisherevans.twc.util.StringUtil;
 import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.Color;
 import org.slf4j.Logger;
@@ -9,9 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by immortal on 11/10/2016.
- */
 public class Text {
     private static final Logger log = LoggerFactory.getLogger(SplashState.class);
 
@@ -27,8 +25,12 @@ public class Text {
     }
 
     public void draw(Color color) {
+        draw(color, 0, 0);
+    }
+
+    public void draw(Color color, float dx, float dy) {
         for(int id = 0;id < lines.length;id++) {
-            font.drawString(xs[id], ys[id], lines[id], color);
+            font.drawString(xs[id] + dx, ys[id] + dy, lines[id], color);
         }
     }
 
@@ -43,6 +45,9 @@ public class Text {
         private float width = 0, height = 0;
         private float lineHeight = 2f;
 
+        private static final String SPACE = " ";
+        private static final String NEWLINE = "\n";
+
         public Builder(AngelCodeFont font, String text) {
             this.font = font;
             this.text = text;
@@ -54,7 +59,7 @@ public class Text {
             return this;
         }
 
-        public Builder topLeftPosition(float x, float y) {
+        public Builder position(float x, float y) {
             this.x = x;
             this.y = y;
             return this;
@@ -78,41 +83,46 @@ public class Text {
 
         public Text build() {
             final String[] lines;
-            if(wrapped) {
-                final List<String> lineList = new LinkedList();
-                final String[] words = text.split(" ");
-                String line = words.length == 0 ? "" : words[0]; // init with first
-                for(int id = 1;id < words.length;id++) { // start loop on second
-                    final String word = words[id];
-                    final String projectedLine = line + " " + word;
-                    if(font.getWidth(projectedLine) <= width) {
-                        line = projectedLine;
-                    } else { // break line, start a new one
-                        lineList.add(line);
-                        line = word;
+            final List<String> lineList = new LinkedList();
+            final String[] textBreaks = text.split(NEWLINE);
+            for(String textBreak:textBreaks) {
+                if(wrapped) {
+                    final String[] words = textBreak.split(SPACE);
+                    String line = words.length == 0 ? "" : words[0]; // init with first
+                    for (int id = 1; id < words.length; id++) { // start loop on second
+                        final String word = words[id];
+                        log.info(word);
+                        final String projectedLine = line + SPACE + word;
+                        log.info("  " + projectedLine);
+                        if (font.getWidth(projectedLine) <= width) {
+                            line = projectedLine;
+                        } else { // break line, start a new one
+                            lineList.add(line);
+                            line = word;
+                        }
                     }
+                    if (line.length() > 0) {
+                        lineList.add(line);
+                    }
+                } else {
+                    lineList.add(textBreak);
                 }
-                if(line.length() > 0) {
-                    lineList.add(line);
-                }
-                lines = lineList.toArray(new String[] { });
-            } else {
-                lines = new String[] { text };
             }
+            lines = lineList.toArray(new String[] { });
+            log.info("building Text for: " + StringUtil.join(lines, ","));
 
-            float baseDy = 0;
+            float baseY = 0;
             float lineDelta = font.getLineHeight()*lineHeight;
             switch (alignVert) {
-                case TOP: baseDy = 0; break;
-                case MIDDLE: baseDy = (height/lineHeight - lines.length)*lineDelta/2f; break;
-                case BOTTOM: baseDy = (height/lineHeight - lines.length)*lineDelta; break;
+                case TOP: baseY = y; break;
+                //case MIDDLE: baseDy = (height/lineDelta - lines.length)*lineDelta/2f; break;
+                case MIDDLE: baseY = y - Math.min(lineDelta*lines.length, height)/2f; break;
+                case BOTTOM: baseY = y - Math.min(lineDelta*lines.length, height) + height; break;
             }
             final float[] ys = new float[lines.length];
             final float[] xs = new float[lines.length];
             for(int id = 0;id < lines.length;id++) {
                 String line = lines[id];
-                float lineX = x;
-                float lineY = y+(id*lineDelta)+baseDy;
                 float dx = 0, dy = 0;
                 switch(alignHorz) {
                     case LEFT: dx = 0; break;
@@ -121,11 +131,11 @@ public class Text {
                 }
                 switch(alignVert) {
                     case TOP: dy = 0; break;
-                    case MIDDLE: dy = (height - font.getHeight("0"))/2f; break;
-                    case BOTTOM: dy = height - font.getHeight("0"); break;
+                    case MIDDLE: dy = (height - font.getLineHeight())/2f; break;
+                    case BOTTOM: dy = height - font.getLineHeight(); break;
                 }
-                xs[id] = lineX + dx;
-                ys[id] = lineY + dy;
+                xs[id] = x + dx;
+                ys[id] = baseY + dy + (id*lineDelta);
             }
             return new Text(lines, xs, ys, font);
         }
