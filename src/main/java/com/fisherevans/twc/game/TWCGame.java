@@ -2,7 +2,12 @@ package com.fisherevans.twc.game;
 
 import com.fisherevans.twc.game.gfx.RenderContext;
 import com.fisherevans.twc.game.gfx.resources.Fonts;
-import org.newdawn.slick.*;
+import com.fisherevans.twc.game.input.InputListener;
+import org.newdawn.slick.AngelCodeFont;
+import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SlickException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,18 +20,27 @@ public class TWCGame extends BasicGame {
     private RenderContext renderContext;
     private TWCState currentState, nextState;
     private final Set<TWCState> initializedStates = new HashSet();
+
+    private InputListener inputListener;
+
     private AngelCodeFont debugFont;
 
     public TWCGame(String title, RenderContext renderContext, TWCState initialState) {
         super(title);
         this.renderContext = renderContext;
-        this.currentState = null;
-        this.nextState = initialState;
+        this.currentState = initialState;
+        this.nextState = null;
+        inputListener = new InputListener(this);
     }
 
     @Override
     public void init(GameContainer gameContainer) throws SlickException {
         debugFont = Fonts.DEFAULT_1.load();
+        gameContainer.getInput().addKeyListener(inputListener);
+        if(currentState != null) {
+            currentState.init(this);
+            currentState.enter(this);
+        }
     }
 
     @Override
@@ -37,15 +51,13 @@ public class TWCGame extends BasicGame {
             }
             currentState = nextState;
             nextState = null;
-            if(!initializedStates.contains(currentState)) {
-                currentState.init(this);
-            }
             currentState.enter(this);
         }
         final float delta = ((float) deltaMillis)/1000f;
         currentState.update(this, delta);
     }
 
+    @Override
     public void render(GameContainer gameContainer, Graphics graphics) throws SlickException {
         graphics.clear();
         graphics.scale(renderContext.actualScale, renderContext.actualScale);
@@ -58,5 +70,13 @@ public class TWCGame extends BasicGame {
 
     public RenderContext getRenderContext() {
         return renderContext;
+    }
+
+    public TWCState getCurrentState() {
+        return currentState;
+    }
+
+    public void setNextState(TWCState nextState) {
+        this.nextState = nextState;
     }
 }

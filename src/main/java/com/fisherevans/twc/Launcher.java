@@ -9,6 +9,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class Launcher {
         System.setProperty("org.lwjgl.librarypath", natives);
         addLibraryPath(natives);
         redirectLogs();
-        final Launcher launcher = new Launcher(new RenderContext(1), false);
+        final Launcher launcher = new Launcher(new RenderContext(3), false);
         launcher.start();
     }
 

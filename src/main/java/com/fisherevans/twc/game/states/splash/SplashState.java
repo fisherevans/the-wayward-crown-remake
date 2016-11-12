@@ -6,6 +6,11 @@ import com.fisherevans.twc.game.gfx.resources.Fonts;
 import com.fisherevans.twc.game.gfx.util.Text;
 import com.fisherevans.twc.game.gfx.util.Text.AlignHorz;
 import com.fisherevans.twc.game.gfx.util.Text.AlignVert;
+import com.fisherevans.twc.game.input.Key;
+import com.fisherevans.twc.game.states.combat.CombatState;
+import com.fisherevans.twc.game.states.transitions.Interpolation;
+import com.fisherevans.twc.game.states.transitions.Transition;
+import com.fisherevans.twc.game.states.transitions.TransitionState;
 import org.newdawn.slick.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,20 +18,24 @@ import org.slf4j.LoggerFactory;
 public class SplashState implements TWCState {
     private static final Logger log = LoggerFactory.getLogger(SplashState.class);
 
-    private float degrees = 0f;
+    private float flashRadians = 0f, fadeIn = 0;
 
     private AngelCodeFont bigFont, smallFont;
-    private Text mainText;
+    private Text titleText, flashText;
 
     @Override
     public void init(TWCGame game) throws SlickException {
         log.info("Initializing splash state");
         bigFont = Fonts.DEFAULT_4.load();
-        smallFont = Fonts.MINI_NUMBERS.load();
-        mainText = new Text.Builder(bigFont, "The Wayward\nCrown")
-                .aligned(AlignHorz.CENTER, AlignVert.MIDDLE)
-                .position(game.getRenderContext().width/2f, game.getRenderContext().height/2f)
+        smallFont = Fonts.DEFAULT_1.load();
+        titleText = new Text.Builder(bigFont, "The Wayward\nCrown")
+                .aligned(AlignHorz.CENTER, AlignVert.BOTTOM)
+                .position(game.getRenderContext().width/2f, game.getRenderContext().height*0.6f)
                 .lineHeight(1.15f)
+                .build();
+        flashText = new Text.Builder(smallFont, ">  Press any key...  <")
+                .aligned(AlignHorz.CENTER, AlignVert.TOP)
+                .position(game.getRenderContext().width/2f, game.getRenderContext().height*0.65f)
                 .build();
     }
 
@@ -37,20 +46,31 @@ public class SplashState implements TWCState {
 
     @Override
     public void update(TWCGame game, float deltaSeconds) throws SlickException {
-        degrees = (degrees + deltaSeconds * 180) % 360;
+        if(fadeIn < 1) {
+            fadeIn += deltaSeconds*0.3333f;
+            if(fadeIn > 1) {
+                fadeIn = 1;
+            }
+        }
+        flashRadians = (float) ((flashRadians + (deltaSeconds * Math.PI)) % (Math.PI * 2f));
     }
 
     @Override
     public void render(TWCGame game, Graphics graphics) throws SlickException {
+        final float flash = (float) ((Math.sin(flashRadians) + 1f)/4f + 0.25f)*fadeIn;
+        titleText.draw(new Color(fadeIn, fadeIn, fadeIn));
+        flashText.draw(new Color(flash, flash, flash));
+    }
 
-        graphics.setColor(new Color(0.5f, 0, 0));
-        int pad = 75;
-        graphics.drawRect(pad, 0, game.getRenderContext().width-(pad*2), game.getRenderContext().height/2f);
+    @Override
+    public void keyPressed(TWCGame game, Key key, char c) {
+        log.info("Got it! " + key);
+        game.setNextState(new TransitionState(this, new CombatState(), 3f, Interpolation.linear(), Transition.simpleFade()));
+    }
 
-        final float brightness = (float) (Math.sin(Math.toRadians(degrees)) + 1f)/4f + 0.5f;
-        final Color color = new Color(brightness, brightness, brightness);
-        mainText.draw(color);
-        smallFont.drawString(10, game.getRenderContext().height-30, String.format("%.5f", brightness));
+    @Override
+    public void keyReleased(TWCGame game, Key key, char c) {
+
     }
 
     @Override
