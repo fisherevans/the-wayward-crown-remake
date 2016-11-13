@@ -13,9 +13,9 @@ public interface TWCState {
 
     void render(TWCGame game, Graphics graphics) throws SlickException;
 
-    void keyPressed(TWCGame game, Key key, char c);
+    void keyPressed(TWCGame game, Key key, char c) throws SlickException;
 
-    void keyReleased(TWCGame game, Key key, char c);
+    void keyReleased(TWCGame game, Key key, char c) throws SlickException;
 
     void leave(TWCGame game) throws SlickException;
 }

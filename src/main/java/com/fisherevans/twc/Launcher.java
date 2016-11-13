@@ -4,16 +4,16 @@ import com.fisherevans.twc.game.TWCGame;
 import com.fisherevans.twc.game.gfx.RenderContext;
 import com.fisherevans.twc.game.states.splash.SplashState;
 import com.fisherevans.twc.slick.TWCLogSystem;
+import com.fisherevans.twc.util.JavaUtil;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.logging.Level;
 
 public class Launcher {
@@ -44,35 +44,18 @@ public class Launcher {
         gameContainer.start();
     }
 
-    public static void main(String[] args) throws Exception {
-        final String natives = new File("target/natives").getAbsolutePath();
+    private static void loadLibraries() throws IOException {
+        String natives = JavaUtil.createTempFolderWithJarFiles(new String[] {
+                "/jinput-dx8.dll", "/jinput-dx8_64.dll", "/jinput-raw.dll", "/jinput-raw_64.dll", "/jinput-wintab.dll",
+                "/liblwjgl.dylib", "/liblwjgl.so", "/liblwjgl64.so", "/lwjgl.dll", "/lwjgl64.dll",
+                "/libjinput-linux.so", "/libjinput-linux64.so", "/libjinput-osx.jnilib",
+                "/libopenal.so", "/libopenal64.so",
+                "/OpenAL32.dll", "/OpenAL64.dll",
+                "/openal.dylib"
+        }).toString();
+        log.info("Libraries coppied to: " + natives);
         System.setProperty("org.lwjgl.librarypath", natives);
-        addLibraryPath(natives);
-        redirectLogs();
-        final Launcher launcher = new Launcher(new RenderContext(3), false);
-        launcher.start();
-    }
-
-    public static void addLibraryPath(String folderPath) throws IOException {
-        try {
-            Field field = ClassLoader.class.getDeclaredField("usr_paths");
-            field.setAccessible(true);
-            String[] paths = (String[])field.get(null);
-            for (int i = 0; i < paths.length; i++) {
-                if (folderPath.equals(paths[i])) {
-                    return;
-                }
-            }
-            String[] tmp = new String[paths.length+1];
-            System.arraycopy(paths,0,tmp,0,paths.length);
-            tmp[paths.length] = folderPath;
-            field.set(null,tmp);
-            System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + folderPath);
-        } catch (IllegalAccessException e) {
-            throw new IOException("Failed to get permissions to set library path");
-        } catch (NoSuchFieldException e) {
-            throw new IOException("Failed to get field handle to set library path");
-        }
+        JavaUtil.addLibraryPath(natives);
     }
 
     private static void redirectLogs() {
@@ -83,5 +66,12 @@ public class Launcher {
         java.util.logging.Logger.getLogger("global").setLevel(Level.FINEST);
         // slick2d logger
         Log.setLogSystem(new TWCLogSystem());
+    }
+
+    public static void main(String[] args) throws Exception {
+        loadLibraries();
+        redirectLogs();
+        final Launcher launcher = new Launcher(new RenderContext(2), false);
+        launcher.start();
     }
 }

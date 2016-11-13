@@ -25,7 +25,6 @@ public class SplashState implements TWCState {
 
     @Override
     public void init(TWCGame game) throws SlickException {
-        log.info("Initializing splash state");
         bigFont = Fonts.DEFAULT_4.load();
         smallFont = Fonts.DEFAULT_1.load();
         titleText = new Text.Builder(bigFont, "The Wayward\nCrown")
@@ -63,9 +62,10 @@ public class SplashState implements TWCState {
     }
 
     @Override
-    public void keyPressed(TWCGame game, Key key, char c) {
-        log.info("Got it! " + key);
-        game.setNextState(new TransitionState(this, new CombatState(), 3f, Interpolation.linear(), Transition.simpleFade()));
+    public void keyPressed(TWCGame game, Key key, char c) throws SlickException {
+        CombatState newState = new CombatState();
+        newState.init(game);
+        game.setNextState(new TransitionState(this, newState, 3f, Interpolation.linear(), Transition.simpleFade()));
     }
 
     @Override

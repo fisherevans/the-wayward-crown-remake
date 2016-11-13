@@ -11,15 +11,11 @@ import org.newdawn.slick.SlickException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class TWCGame extends BasicGame {
     private static final Logger log = LoggerFactory.getLogger(TWCGame.class);
 
     private RenderContext renderContext;
-    private TWCState currentState, nextState;
-    private final Set<TWCState> initializedStates = new HashSet();
+    private TWCState currentState;
 
     private InputListener inputListener;
 
@@ -29,7 +25,6 @@ public class TWCGame extends BasicGame {
         super(title);
         this.renderContext = renderContext;
         this.currentState = initialState;
-        this.nextState = null;
         inputListener = new InputListener(this);
     }
 
@@ -45,14 +40,6 @@ public class TWCGame extends BasicGame {
 
     @Override
     public void update(GameContainer gameContainer, int deltaMillis) throws SlickException {
-        if(nextState != null) {
-            if(currentState != null) {
-                currentState.leave(this);
-            }
-            currentState = nextState;
-            nextState = null;
-            currentState.enter(this);
-        }
         final float delta = ((float) deltaMillis)/1000f;
         currentState.update(this, delta);
     }
@@ -65,7 +52,7 @@ public class TWCGame extends BasicGame {
             currentState.render(this, graphics);
         }
         graphics.resetTransform();
-        debugFont.drawString(10, 10, String.format("FPS:%d", gameContainer.getFPS()));
+        debugFont.drawString(4, 4, String.format("FPS:%d", gameContainer.getFPS()));
     }
 
     public RenderContext getRenderContext() {
@@ -76,7 +63,11 @@ public class TWCGame extends BasicGame {
         return currentState;
     }
 
-    public void setNextState(TWCState nextState) {
-        this.nextState = nextState;
+    public void setNextState(TWCState nextState) throws SlickException {
+        if(this.currentState != null) {
+            this.currentState.leave(this);
+        }
+        this.currentState = nextState;
+        this.currentState.enter(this);
     }
 }
