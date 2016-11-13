@@ -1,6 +1,6 @@
 package com.fisherevans.twc.game.states.combat;
 
-class Action {
+public class Action {
     private int duration;
     private String name;
 
@@ -16,4 +16,6 @@ class Action {
     public String getName() {
         return name;
     }
+
+
 }

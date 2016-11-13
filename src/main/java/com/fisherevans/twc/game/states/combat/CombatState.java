@@ -19,8 +19,8 @@ public class CombatState implements TWCState {
 
     private enum ControlState { PLAYER, CPU , WAIT }
 
-    private static final int UNIT_DIPLAY_SCALE = 16;
-    private static final float UNIT_TIME_SCALE = 4;
+    private int unitDisplayScale = 16;
+    private float unitTimeScale = 4;
 
 
     private List<Action> playerActionStack, cpuActionStack;
@@ -61,7 +61,15 @@ public class CombatState implements TWCState {
             state = ControlState.WAIT;
         }
         if(state == ControlState.WAIT) {
-            unitsElapsed += deltaSeconds*UNIT_TIME_SCALE;
+
+            if(playerSum == minSum && playerNext == null) {
+                float left = Math.min(1f, ((float) minSum) - unitsElapsed + 0.025f);
+                unitsElapsed += deltaSeconds * unitTimeScale * left;
+            } else {
+                unitsElapsed += deltaSeconds * unitTimeScale;
+            }
+
+
             if(unitsElapsed >= minSum) {
                 unitsElapsed = minSum;
                 updatePlayerState();
@@ -86,8 +94,8 @@ public class CombatState implements TWCState {
 
     @Override
     public void render(TWCGame game, Graphics graphics) throws SlickException {
-        float pixelLength = unitsElapsed*UNIT_DIPLAY_SCALE;
-        float line = game.getRenderContext().width - 9*UNIT_DIPLAY_SCALE;
+        float pixelLength = unitsElapsed* unitDisplayScale;
+        float line = game.getRenderContext().width - 9* unitDisplayScale;
         float dx = line - pixelLength;
         renderStack(graphics, game.getRenderContext().actualScale, "Player", playerActionStack, 75, dx, Color.red, playerNext);
         renderStack(graphics, game.getRenderContext().actualScale, "CPU", cpuActionStack, 150, dx, Color.cyan);
@@ -101,6 +109,10 @@ public class CombatState implements TWCState {
                 playerCombo,
                 maxCombo
         ));
+        smallFont.drawString(200, 10, String.format(
+                "Display Scale: %d\nTime Scale: %.2f",
+                unitDisplayScale, unitTimeScale
+        ));
     }
 
     private void renderStack(Graphics graphics, float preScale, String name, List<Action> actions, float y, float dx, Color color, Action ... additional) {
@@ -108,7 +120,7 @@ public class CombatState implements TWCState {
         graphics.setColor(color);
         playerFont.drawString(20, y, name, color);
         for(Action action:actions) {
-            int width = action.getDuration()* UNIT_DIPLAY_SCALE;
+            int width = action.getDuration()* unitDisplayScale;
             graphics.setLineWidth(preScale*2);
             graphics.drawRect(dx + padding, y + playerFont.getLineHeight()*1.5f, width - (padding*2), 20);
             dx += width;
@@ -116,7 +128,7 @@ public class CombatState implements TWCState {
         graphics.setColor(color.scaleCopy(0.5f));
         for(Action action:additional) {
             if(action != null) {
-                int width = action.getDuration() * UNIT_DIPLAY_SCALE;
+                int width = action.getDuration() * unitDisplayScale;
                 graphics.setLineWidth(preScale * 2);
                 graphics.drawRect(dx + padding, y + playerFont.getLineHeight() * 1.5f, width - (padding * 2), 20);
                 dx += width;
@@ -165,6 +177,18 @@ public class CombatState implements TWCState {
                     break;
                 case OPTION_9:
                     action = new Action(9, "???");
+                    break;
+                case LEFT:
+                    unitDisplayScale = Math.max(4, unitDisplayScale-1);
+                    break;
+                case RIGHT:
+                    unitDisplayScale = Math.min(48, unitDisplayScale+1);
+                    break;
+                case DOWN:
+                    unitTimeScale = Math.max(1, unitTimeScale-0.25f);
+                    break;
+                case UP:
+                    unitTimeScale = Math.min(16, unitTimeScale+0.25f);
                     break;
             }
             if(action != null) {

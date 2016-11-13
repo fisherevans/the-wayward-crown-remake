@@ -11,9 +11,7 @@ import org.newdawn.slick.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.logging.Level;
 
 public class Launcher {
@@ -46,16 +44,16 @@ public class Launcher {
 
     private static void loadLibraries() throws IOException {
         String natives = JavaUtil.createTempFolderWithJarFiles(new String[] {
-                "/jinput-dx8.dll", "/jinput-dx8_64.dll", "/jinput-raw.dll", "/jinput-raw_64.dll", "/jinput-wintab.dll",
-                "/liblwjgl.dylib", "/liblwjgl.so", "/liblwjgl64.so", "/lwjgl.dll", "/lwjgl64.dll",
+                "/jinput-dx8.dll",     "/jinput-dx8_64.dll",    "/jinput-raw.dll",       "/jinput-raw_64.dll",         "/jinput-wintab.dll",
+                "/liblwjgl.dylib",     "/liblwjgl.so",          "/liblwjgl64.so",        "/lwjgl.dll", "/lwjgl64.dll",
                 "/libjinput-linux.so", "/libjinput-linux64.so", "/libjinput-osx.jnilib",
-                "/libopenal.so", "/libopenal64.so",
-                "/OpenAL32.dll", "/OpenAL64.dll",
+                "/libopenal.so",       "/libopenal64.so",
+                "/OpenAL32.dll",       "/OpenAL64.dll",
                 "/openal.dylib"
         }).toString();
-        log.info("Libraries coppied to: " + natives);
+        log.info("Libraries copied to: " + natives);
         System.setProperty("org.lwjgl.librarypath", natives);
-        JavaUtil.addLibraryPath(natives);
+        JavaUtil.addClassLoaderUserPath(natives);
     }
 
     private static void redirectLogs() {

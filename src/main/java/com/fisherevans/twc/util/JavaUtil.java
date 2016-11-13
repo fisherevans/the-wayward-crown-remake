@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class JavaUtil {
-    public static void addLibraryPath(String folderPath) throws IOException {
+    public static void addClassLoaderUserPath(String folderPath) throws IOException {
         try {
             Field field = ClassLoader.class.getDeclaredField("usr_paths");
             field.setAccessible(true);
