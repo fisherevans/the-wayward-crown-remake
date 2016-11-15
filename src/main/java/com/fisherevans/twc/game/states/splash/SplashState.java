@@ -8,12 +8,13 @@ import com.fisherevans.twc.game.gfx.util.Text.AlignHorz;
 import com.fisherevans.twc.game.gfx.util.Text.AlignVert;
 import com.fisherevans.twc.game.input.Key;
 import com.fisherevans.twc.game.states.combat.CombatState;
-import com.fisherevans.twc.game.states.transitions.Interpolation;
-import com.fisherevans.twc.game.states.transitions.Transition;
 import com.fisherevans.twc.game.states.transitions.TransitionState;
+import com.fisherevans.twc.util.MathUtil;
 import org.newdawn.slick.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.fisherevans.twc.util.MathUtil.PI;
 
 public class SplashState implements TWCState {
     private static final Logger log = LoggerFactory.getLogger(SplashState.class);
@@ -51,12 +52,12 @@ public class SplashState implements TWCState {
                 fadeIn = 1;
             }
         }
-        flashRadians = (float) ((flashRadians + (deltaSeconds * Math.PI)) % (Math.PI * 2f));
+        flashRadians = (flashRadians + (deltaSeconds*PI)) % (PI*2f);
     }
 
     @Override
     public void render(TWCGame game, Graphics graphics) throws SlickException {
-        final float flash = (float) ((Math.sin(flashRadians) + 1f)/4f + 0.25f)*fadeIn;
+        final float flash = ((MathUtil.sin(flashRadians) + 1f)/4f + 0.25f)*fadeIn;
         titleText.draw(new Color(fadeIn, fadeIn, fadeIn));
         flashText.draw(new Color(flash, flash, flash));
     }

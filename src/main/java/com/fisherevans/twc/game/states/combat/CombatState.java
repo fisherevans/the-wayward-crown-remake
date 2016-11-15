@@ -8,6 +8,7 @@ import com.fisherevans.twc.game.states.combat.players.Player;
 import com.fisherevans.twc.game.states.combat.players.PlayerStats;
 import com.fisherevans.twc.game.states.combat.players.skills.Skill;
 import com.fisherevans.twc.game.states.combat.players.skills.SkillSegment;
+import com.fisherevans.twc.util.MathUtil;
 import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -47,7 +48,7 @@ public class CombatState implements TWCState {
         cpu = new Player(
                 "CPU",
                 new PlayerStats(100),
-                p -> Skill.of("HAx", SkillSegment.doesNothing((int)((Math.random()*8)+1))));
+                p -> Skill.of("HAx", SkillSegment.doesNothing(MathUtil.randomInt(1, 8))));
         combatEnvironment = new CombatEnvironment(human, cpu);
     }
 

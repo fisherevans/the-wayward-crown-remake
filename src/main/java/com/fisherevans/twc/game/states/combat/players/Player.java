@@ -9,7 +9,7 @@ import java.util.List;
 public class Player implements Comparable<Player> {
     private static final Comparator<Player> COMPARATOR = Comparator
             .comparing(Player::getStats)
-            .thenComparing((a, b) -> Math.random() > 5 ? 1 : -1);
+            .thenComparing((a, b) -> Math.random() > 5 ? 1 : -1); // TODO randomly resolving play priority...
 
     private final String name;
     private final PlayerStats stats;
