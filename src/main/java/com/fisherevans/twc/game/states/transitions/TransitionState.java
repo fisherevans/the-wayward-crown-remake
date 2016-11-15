@@ -61,4 +61,8 @@ public class TransitionState implements TWCState {
     public void leave(TWCGame game) throws SlickException {
 
     }
+
+    public static TransitionState linearFade(TWCState previous, TWCState next, float duration) {
+        return new TransitionState(previous, next, duration, Interpolation.linear(), Transition.simpleFade());
+    }
 }

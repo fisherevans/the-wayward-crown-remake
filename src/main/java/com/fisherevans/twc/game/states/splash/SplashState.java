@@ -63,9 +63,11 @@ public class SplashState implements TWCState {
 
     @Override
     public void keyPressed(TWCGame game, Key key, char c) throws SlickException {
-        CombatState newState = new CombatState();
-        newState.init(game);
-        game.setNextState(new TransitionState(this, newState, 1.5f, Interpolation.linear(), Transition.simpleFade()));
+        CombatState combatState = new CombatState();
+        combatState.init(game);
+        TransitionState transitionState = TransitionState.linearFade(this, combatState, 1.5f);
+        transitionState.init(game);
+        game.setNextState(transitionState);
     }
 
     @Override
