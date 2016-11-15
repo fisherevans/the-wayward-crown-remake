@@ -1,6 +1,5 @@
 package com.fisherevans.twc.game.states.combat.players.skills;
 
-import com.fisherevans.twc.game.states.combat.players.SkillProvider;
 import com.fisherevans.twc.game.states.combat.players.skills.SegmentListener.End;
 import com.fisherevans.twc.game.states.combat.players.skills.SegmentListener.Interrupt;
 import com.fisherevans.twc.game.states.combat.players.skills.SegmentListener.Start;
@@ -17,6 +16,9 @@ public interface SkillSegment {
             public Start startListener() { return Start.empty; }
             public Interrupt interruptListener() { return Interrupt.empty; }
             public End endListener() { return End.empty; }
-        }
+            public String toString() {
+                return String.format("SkillSegment[duration=%d]", duration());
+            }
+        };
     }
 }
