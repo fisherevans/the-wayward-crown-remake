@@ -1,7 +1,7 @@
 package com.fisherevans.twc.game.states.combat.players;
 
-import com.fisherevans.twc.game.states.combat.players.skills.Skill;
+import com.fisherevans.twc.game.states.combat.players.skills.SkillInstance;
 
 public interface SkillProvider {
-    Skill nextSkill(Player owner);
+    SkillInstance nextSkill(Player owner);
 }

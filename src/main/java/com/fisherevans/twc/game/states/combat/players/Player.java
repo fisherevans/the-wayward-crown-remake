@@ -1,6 +1,6 @@
 package com.fisherevans.twc.game.states.combat.players;
 
-import com.fisherevans.twc.game.states.combat.players.skills.Skill;
+import com.fisherevans.twc.game.states.combat.players.skills.SkillInstance;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,9 +14,9 @@ public class Player implements Comparable<Player> {
     private final String name;
     private final PlayerStats stats;
     private final SkillProvider skillProvider;
-    private final List<Skill> executedSkills;
+    private final List<SkillInstance> executedSkills;
 
-    private Skill currentSkill;
+    private SkillInstance currentSkill;
 
     public Player(String name, PlayerStats stats, SkillProvider skillProvider) {
         this.name = name;
@@ -35,7 +35,7 @@ public class Player implements Comparable<Player> {
         return stats;
     }
 
-    public List<Skill> getExecutedSkills() {
+    public List<SkillInstance> getExecutedSkills() {
         return executedSkills;
     }
 
@@ -43,11 +43,11 @@ public class Player implements Comparable<Player> {
         return skillProvider;
     }
 
-    public void setCurrentSkill(Skill currentSkill) {
+    public void setCurrentSkill(SkillInstance currentSkill) {
         this.currentSkill = currentSkill;
     }
 
-    public Skill getCurrentSkill() {
+    public SkillInstance getCurrentSkill() {
         return currentSkill;
     }
 
