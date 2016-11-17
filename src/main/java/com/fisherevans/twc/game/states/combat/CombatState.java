@@ -4,11 +4,10 @@ import com.fisherevans.twc.game.TWCGame;
 import com.fisherevans.twc.game.TWCState;
 import com.fisherevans.twc.game.gfx.resources.Fonts;
 import com.fisherevans.twc.game.input.Key;
-import com.fisherevans.twc.game.rpg.skills.DoNothing;
+import com.fisherevans.twc.game.rpg.SkillDefinition;
 import com.fisherevans.twc.game.states.combat.CombatEvent.EventName;
-import com.fisherevans.twc.game.states.combat.players.Player;
-import com.fisherevans.twc.game.states.combat.players.PlayerStats;
-import com.fisherevans.twc.game.states.combat.players.skills.SkillInstance;
+import com.fisherevans.twc.game.rpg.PlayerStats;
+import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
 import com.fisherevans.twc.util.MathUtil;
 import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.Color;
@@ -28,7 +27,7 @@ public class CombatState implements TWCState {
     private float unitTimeScale = 4;
     private float slowTimeAfter = 0.75f;
 
-    private Player human, cpu;
+    private CombatPlayer human, cpu;
     private CombatEnvironment combatEnvironment;
 
     private AtomicReference<SkillInstance> playerNext = new AtomicReference(null);
@@ -38,7 +37,7 @@ public class CombatState implements TWCState {
     private AngelCodeFont playerFont, smallFont;
 
     public CombatState() {
-        human = new Player(
+        human = new CombatPlayer(
                 "Human",
                 new PlayerStats(100),
                 p -> {
@@ -47,10 +46,10 @@ public class CombatState implements TWCState {
                     maxCombo = Math.max(maxCombo, playerCombo);
                     return next;
                 });
-        cpu = new Player(
+        cpu = new CombatPlayer(
                 "CPU",
                 new PlayerStats(100),
-                p -> new DoNothing(MathUtil.randomInt(1, 8)).createInstance());
+                p -> SkillDefinition.doNothing(MathUtil.randomInt(1, 8)).createInstance());
         combatEnvironment = new CombatEnvironment(human, cpu);
     }
 
@@ -98,7 +97,7 @@ public class CombatState implements TWCState {
         ));
     }
 
-    private void renderStack(Graphics graphics, float preScale, Player player, float y, float dx, Color color, SkillInstance queuedSkill) {
+    private void renderStack(Graphics graphics, float preScale, CombatPlayer player, float y, float dx, Color color, SkillInstance queuedSkill) {
         int padding = 2;
         graphics.setColor(color);
         playerFont.drawString(20, y, player.getName(), color);
@@ -123,7 +122,7 @@ public class CombatState implements TWCState {
 
         graphics.setLineWidth(preScale*2);
         for(SkillRenderObject sro:renderList) {
-            int width = sro.skill.totalSegmentDuration() * unitDisplayScale;
+            int width = sro.skill.getTotalSegmentDuration() * unitDisplayScale;
             graphics.setColor(sro.color);
             graphics.drawRect(dx + padding, y + playerFont.getLineHeight()*1.5f, width - (padding*2), unitDisplayScale - padding*2);
             dx += width;
@@ -158,7 +157,7 @@ public class CombatState implements TWCState {
                     break;
             }
             if(duration > 0) {
-                playerNext.set(new DoNothing(duration).createInstance());
+                playerNext.set(SkillDefinition.doNothing(duration).createInstance());
             }
         }
     }

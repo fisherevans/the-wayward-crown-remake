@@ -1,12 +1,10 @@
 package com.fisherevans.twc.game.states.combat;
 
 import com.fisherevans.twc.game.states.combat.CombatEvent.EventName;
-import com.fisherevans.twc.game.states.combat.players.Player;
-import com.fisherevans.twc.game.states.combat.players.skills.SkillInstance;
-import com.fisherevans.twc.game.states.combat.players.skills.SkillSegment;
-import com.fisherevans.twc.game.states.combat.players.skills.SkillSegment.EventContext;
-import com.fisherevans.twc.game.states.combat.players.skills.SkillSegment.EventPlayerContext;
-import com.fisherevans.twc.game.states.combat.players.skills.SkillSegment.EventType;
+import com.fisherevans.twc.game.states.combat.skills.SegmentNotification.NotificationType;
+import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
+import com.fisherevans.twc.game.states.combat.skills.SkillSegment;
+import com.fisherevans.twc.game.states.combat.skills.SegmentNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +14,11 @@ import java.util.TreeSet;
 public class CombatEnvironment {
     private static final Logger log = LoggerFactory.getLogger(CombatEnvironment.class);
 
-    private final Player player1, player2;
+    private final CombatPlayer player1, player2;
     private TreeSet<CombatEvent> eventStack;
     private float timePassed;
 
-    public CombatEnvironment(Player player1, Player player2) {
+    public CombatEnvironment(CombatPlayer player1, CombatPlayer player2) {
         this.player1 = player1;
         this.player2 = player2;
         this.eventStack = new TreeSet();
@@ -34,23 +32,16 @@ public class CombatEnvironment {
         float executeUntil = timePassed + timeDelta;
         CombatEvent event;
         while((event = eventStack.first()).getTime() < executeUntil) {
-            Player player = event.getPlayer();
+            CombatPlayer player = event.getPlayer();
             timePassed = event.getTime();
             switch (event.getEventName()) {
                 case END:
                 case START: {
-                    CombatEvent nextOpponentEvent = getNextEvent(getOpponent(player), null);
-                    event.getSegment().handleEvent(EventContext.of(
+                    player.setCurrentSegment(event.getSegment());
+                    event.getSegment().listen(new SegmentNotification(
                             this,
-                            event.getEventName() == EventName.START ? EventType.START : EventType.END,
-                            EventPlayerContext.of(
-                                    player,
-                                    event.getSkill(),
-                                    event.getSegment()),
-                            EventPlayerContext.of(
-                                    nextOpponentEvent.getPlayer(),
-                                    nextOpponentEvent.getSkill(),
-                                    nextOpponentEvent.getSegment()))
+                            event.getEventName() == EventName.START ? NotificationType.START : NotificationType.END,
+                            player, getOpponent(player))
                     ).forEach(Action::execute);
                     eventStack.pollFirst();
                     break;
@@ -66,6 +57,7 @@ public class CombatEnvironment {
                             player.getExecutedSkills().add(player.getCurrentSkill());
                         }
                         player.setCurrentSkill(nextSkill);
+                        player.setCurrentSegment(null);
                         queueSegments(player, nextSkill, event.getTime());
                         eventStack.pollFirst();
                     }
@@ -76,16 +68,16 @@ public class CombatEnvironment {
         timePassed = executeUntil;
     }
 
-    private void queueSegments(Player player, SkillInstance skill, int time) {
-        for(SkillSegment segment:skill.segments()) {
+    private void queueSegments(CombatPlayer player, SkillInstance skill, int time) {
+        for(SkillSegment segment:skill.getSegments()) {
             eventStack.add(new CombatEvent(player, skill, segment, EventName.START, time));
-            time += segment.duration();
+            time += segment.getDuration();
             eventStack.add(new CombatEvent(player, skill, segment, EventName.END, time));
         }
         eventStack.add(new CombatEvent(player, null, null, EventName.QUEUE_NEXT, time));
     }
 
-    private Player getOpponent(Player player) {
+    private CombatPlayer getOpponent(CombatPlayer player) {
         if(player1.equals(player)) {
             return player2;
         } else if(player2.equals(player)) {
@@ -95,11 +87,11 @@ public class CombatEnvironment {
         }
     }
 
-    public CombatEvent getNextEvent(Player player, CombatEvent.EventName eventName) {
+    public CombatEvent getNextEvent(CombatPlayer player, CombatEvent.EventName eventName) {
         return getNextEvent(player, eventName, false);
     }
 
-    public CombatEvent getNextEvent(Player player, CombatEvent.EventName eventName, boolean reverseSearch) {
+    public CombatEvent getNextEvent(CombatPlayer player, CombatEvent.EventName eventName, boolean reverseSearch) {
         Iterator<CombatEvent> iterator = reverseSearch ? eventStack.descendingIterator() : eventStack.iterator();
         while(iterator.hasNext()) {
             CombatEvent combatEvent = iterator.next();

@@ -1,14 +1,16 @@
-package com.fisherevans.twc.game.states.combat.players;
+package com.fisherevans.twc.game.states.combat;
 
-import com.fisherevans.twc.game.states.combat.players.skills.SkillInstance;
+import com.fisherevans.twc.game.rpg.PlayerStats;
+import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
+import com.fisherevans.twc.game.states.combat.skills.SkillSegment;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Player implements Comparable<Player> {
-    private static final Comparator<Player> COMPARATOR = Comparator
-            .comparing(Player::getStats)
+public class CombatPlayer implements Comparable<CombatPlayer> {
+    private static final Comparator<CombatPlayer> COMPARATOR = Comparator
+            .comparing(CombatPlayer::getStats)
             .thenComparing((a, b) -> Math.random() > 5 ? 1 : -1); // TODO randomly resolving play priority...
 
     private final String name;
@@ -17,8 +19,9 @@ public class Player implements Comparable<Player> {
     private final List<SkillInstance> executedSkills;
 
     private SkillInstance currentSkill;
+    private SkillSegment currentSegment;
 
-    public Player(String name, PlayerStats stats, SkillProvider skillProvider) {
+    public CombatPlayer(String name, PlayerStats stats, SkillProvider skillProvider) {
         this.name = name;
         this.stats = stats;
         this.skillProvider = skillProvider;
@@ -51,14 +54,26 @@ public class Player implements Comparable<Player> {
         return currentSkill;
     }
 
+    public SkillSegment getCurrentSegment() {
+        return currentSegment;
+    }
+
+    public void setCurrentSegment(SkillSegment currentSegment) {
+        this.currentSegment = currentSegment;
+    }
+
     @Override
-    public int compareTo(Player other) {
+    public int compareTo(CombatPlayer other) {
         return COMPARATOR.compare(this, other);
     }
 
     public String toString() {
-        return String.format("Player[name=%s,stats=%s]",
+        return String.format("CombatPlayer[name=%s,stats=%s]",
                 getName(),
                 getStats().toString());
+    }
+
+    public static interface SkillProvider {
+        SkillInstance nextSkill(CombatPlayer owner);
     }
 }

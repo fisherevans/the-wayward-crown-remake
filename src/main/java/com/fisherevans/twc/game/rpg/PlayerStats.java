@@ -1,4 +1,4 @@
-package com.fisherevans.twc.game.states.combat.players;
+package com.fisherevans.twc.game.rpg;
 
 import java.util.Comparator;
 

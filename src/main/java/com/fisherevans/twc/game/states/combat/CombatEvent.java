@@ -1,8 +1,7 @@
 package com.fisherevans.twc.game.states.combat;
 
-import com.fisherevans.twc.game.states.combat.players.Player;
-import com.fisherevans.twc.game.states.combat.players.skills.SkillInstance;
-import com.fisherevans.twc.game.states.combat.players.skills.SkillSegment;
+import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
+import com.fisherevans.twc.game.states.combat.skills.SkillSegment;
 
 import java.util.Comparator;
 
@@ -12,13 +11,13 @@ class CombatEvent implements Comparable<CombatEvent> {
             .thenComparing(CombatEvent::getEventName)
             .thenComparing(CombatEvent::getPlayer);
 
-    private final Player player;
+    private final CombatPlayer player;
     private final SkillInstance skill;
     private final SkillSegment segment;
     private final EventName eventName;
     private final int time;
 
-    public CombatEvent(Player player, SkillInstance skill, SkillSegment segment, EventName eventName, int time) {
+    public CombatEvent(CombatPlayer player, SkillInstance skill, SkillSegment segment, EventName eventName, int time) {
         this.player = player;
         this.skill = skill;
         this.segment = segment;
@@ -26,7 +25,7 @@ class CombatEvent implements Comparable<CombatEvent> {
         this.time = time;
     }
 
-    public Player getPlayer() {
+    public CombatPlayer getPlayer() {
         return player;
     }
 
