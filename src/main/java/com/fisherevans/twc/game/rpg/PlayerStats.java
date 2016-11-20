@@ -4,20 +4,23 @@ import java.util.Comparator;
 
 public class PlayerStats implements Comparable<PlayerStats> {
     private static final Comparator<PlayerStats> COMPARATOR = Comparator
-            .comparing(PlayerStats::getHealth);
+            .comparing(PlayerStats::getSpeed)
+            .thenComparing(PlayerStats::getHealth);
 
     public int health;
+    public int speed;
 
-    public PlayerStats(int health) {
+    public PlayerStats(int health, int speed) {
         this.health = health;
+        this.speed = speed;
     }
 
     public int getHealth() {
         return health;
     }
 
-    public void setHealth(int health) {
-        this.health = health;
+    public int getSpeed() {
+        return speed;
     }
 
     @Override

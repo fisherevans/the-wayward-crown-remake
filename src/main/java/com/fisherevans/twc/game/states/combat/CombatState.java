@@ -39,7 +39,7 @@ public class CombatState implements TWCState {
     public CombatState() {
         human = new CombatPlayer(
                 "Human",
-                new PlayerStats(100),
+                new PlayerStats(100, 5),
                 p -> {
                     SkillInstance next = playerNext.getAndSet(null);
                     playerCombo = next == null ? 0 : playerCombo + 1;
@@ -48,7 +48,7 @@ public class CombatState implements TWCState {
                 });
         cpu = new CombatPlayer(
                 "CPU",
-                new PlayerStats(100),
+                new PlayerStats(100, 3),
                 p -> SkillDefinition.doNothing(MathUtil.randomInt(1, 8)).createInstance());
         combatEnvironment = new CombatEnvironment(human, cpu);
     }

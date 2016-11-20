@@ -81,6 +81,13 @@
             <version>1.7.5</version>
         </dependency>
 
+        <!-- config -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.17</version>
+        </dependency>
+
         <!-- graphics -->
         <dependency>
             <groupId>org.slick2d</groupId>
