@@ -3,6 +3,8 @@ package com.fisherevans.twc.game;
 import com.fisherevans.twc.game.gfx.RenderContext;
 import com.fisherevans.twc.game.gfx.resources.Fonts;
 import com.fisherevans.twc.game.input.InputListener;
+import com.fisherevans.twc.game.rpg.skills.SkillGroupRegistry;
+import com.fisherevans.twc.game.rpg.skills.SkillRegistry;
 import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -19,6 +21,9 @@ public class TWCGame extends BasicGame {
 
     private InputListener inputListener;
 
+    private SkillRegistry skillRegistry;
+    private SkillGroupRegistry skillGroupRegistry;
+
     private AngelCodeFont debugFont;
 
     public TWCGame(String title, RenderContext renderContext, TWCState initialState) {
@@ -30,6 +35,14 @@ public class TWCGame extends BasicGame {
 
     @Override
     public void init(GameContainer gameContainer) throws SlickException {
+        try {
+            skillRegistry = SkillRegistry.loadFromYamlFile("/skills/skills.yml");
+            skillGroupRegistry = SkillGroupRegistry.loadFromYamlFile("/skills/groups.yml", skillRegistry);
+        } catch (Exception e) {
+            log.error("Failed to load configuration", e);
+            throw new RuntimeException(e);
+        }
+
         debugFont = Fonts.DEFAULT_1.load();
         gameContainer.getInput().addKeyListener(inputListener);
         if(currentState != null) {
@@ -69,5 +82,13 @@ public class TWCGame extends BasicGame {
         }
         this.currentState = nextState;
         this.currentState.enter(this);
+    }
+
+    public SkillRegistry getSkillRegistry() {
+        return skillRegistry;
+    }
+
+    public SkillGroupRegistry getSkillGroupRegistry() {
+        return skillGroupRegistry;
     }
 }

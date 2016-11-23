@@ -1,6 +1,6 @@
 package com.fisherevans.twc.game.states.combat.skills;
 
-import com.fisherevans.twc.game.rpg.SkillDefinition;
+import com.fisherevans.twc.game.rpg.skills.SkillDefinition;
 
 import java.util.Arrays;
 import java.util.List;

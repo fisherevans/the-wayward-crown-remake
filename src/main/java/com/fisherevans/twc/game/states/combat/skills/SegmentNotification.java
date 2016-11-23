@@ -33,4 +33,12 @@ public class SegmentNotification {
     }
 
     public enum NotificationType { START, INTERRUPT, END }
+
+    @Override
+    public String toString() {
+        return String.format("SegmentNotification[type=%s,owner=%s,opponent=%s]",
+                eventType.name(),
+                owner.getName(),
+                opponent.getName());
+    }
 }

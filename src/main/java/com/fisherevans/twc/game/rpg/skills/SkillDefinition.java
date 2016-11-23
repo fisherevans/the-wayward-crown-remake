@@ -1,4 +1,4 @@
-package com.fisherevans.twc.game.rpg;
+package com.fisherevans.twc.game.rpg.skills;
 
 import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
 import com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator;
@@ -63,10 +63,24 @@ public class SkillDefinition {
                 skillInstanceCreator == null ? "null" : skillInstanceCreator.getClass().toString());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SkillDefinition that = (SkillDefinition) o;
+        return id != null ? id.equals(that.id) : that.id == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
     public static SkillDefinition doNothing(int duration) {
         return new SkillDefinition(
                 "do-nothing_" + duration + "_" + UUID.randomUUID().toString(),
-                "Do Nothing",
+                "Do Nothing (" + duration + ")",
                 "Just sit there. Doing nothing. Like an idiot. For like " + duration + " units.",
                 null, null,
                 new DoNothingCreator(duration)

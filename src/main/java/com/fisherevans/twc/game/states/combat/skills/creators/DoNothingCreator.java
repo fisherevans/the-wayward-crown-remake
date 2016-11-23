@@ -1,6 +1,6 @@
 package com.fisherevans.twc.game.states.combat.skills.creators;
 
-import com.fisherevans.twc.game.rpg.SkillDefinition;
+import com.fisherevans.twc.game.rpg.skills.SkillDefinition;
 import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
 import com.fisherevans.twc.game.states.combat.skills.SkillSegment;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class DoNothingCreator implements SkillInstanceCreator {
-    private static final Logger log = LoggerFactory.getLogger(SkillDefinition.class);
+    private static final Logger log = LoggerFactory.getLogger(DoNothingCreator.class);
 
     private final int duration;
 
@@ -29,7 +29,7 @@ public class DoNothingCreator implements SkillInstanceCreator {
                 new SkillSegment(
                         duration,
                         (c) -> Arrays.asList(
-                                () -> log.info("DoNothing: " + c.toString())
+                                () -> log.info(definition.getName() + ": " + c.toString())
                         )
                 )
         );

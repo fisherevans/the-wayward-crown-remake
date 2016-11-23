@@ -1,6 +1,7 @@
-package com.fisherevans.twc.game.rpg;
+package com.fisherevans.twc.game.rpg.skills;
 
 import com.fisherevans.twc.game.states.combat.skills.creators.SkillInstanceCreator;
+import com.fisherevans.twc.util.imut_col.ImmutableSet;
 import org.newdawn.slick.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,22 @@ public class SkillRegistry {
         this.skills = skills;
     }
 
+    public SkillDefinition get(String id) {
+        SkillDefinition result = skills.get(id);
+        if(result == null) {
+            throw new RuntimeException("Unknown Skill: " + id);
+        }
+        return result;
+    }
+
+    public ImmutableSet<String> ids() {
+        return new ImmutableSet(skills.keySet());
+    }
+
+    public static SkillRegistry loadFromYamlFile(String path) throws IOException {
+        return loadFromYaml(SkillRegistry.class.getResource(path));
+    }
+
     public static SkillRegistry loadFromYaml(URL url) throws IOException {
         InputStream is = null;
         try {
@@ -29,6 +46,7 @@ public class SkillRegistry {
             Yaml yaml = new Yaml();
             Map<String, SkillDefinition> skills = new HashMap();
             Map config = (Map) yaml.load(is);
+            log.info("Got config: " + String.valueOf(config));
             for (Object key : config.keySet()) {
                 Map value = (Map) config.get(key);
                 SkillDefinition skill = new SkillDefinition(
@@ -64,15 +82,10 @@ public class SkillRegistry {
     }
 
     private static Image getImage(String path) {
-        // TODO
-        return null;
-    }
-
-    public static void main(String[] args) throws IOException {
-        SkillRegistry registry = loadFromYaml(SkillRegistry.class.getResource("/skills/defs.yml"));
-        for(String id:registry.skills.keySet()) {
-            log.info(String.format("%20s > %s",
-                    id, String.valueOf(registry.skills.get(id))));
+        try {
+            return new Image(path, false, Image.FILTER_NEAREST);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load image for :" + path, e);
         }
     }
 }

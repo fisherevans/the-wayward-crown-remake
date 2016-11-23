@@ -1,0 +1,20 @@
+roots:
+  - do-nothing
+  - slash
+  - parry
+  - rest
+
+groups:
+  slash:
+    - jab
+  jab:
+    - chop
+
+  parry:
+    - hamstring-slice
+    - dodge
+
+  rest:
+    - heal
+  heal:
+    - heal

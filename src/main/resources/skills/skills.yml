@@ -1,0 +1,75 @@
+do-nothing:
+  name: "Do Nothing"
+  desc: "Just sit there. Doing nothing. Like an idiot."
+  smallIcon: media/icons/skills/do-nothing.png
+  largeIcon: media/icons/skills/do-nothing.png
+  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+  instanceCreatorArgs:
+    duration: 1
+
+slash:
+  name: "Slash"
+  desc: "Slash at your foe"
+  smallIcon: media/icons/skills/slash.png
+  largeIcon: media/icons/skills/slash.png
+  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+  instanceCreatorArgs:
+    duration: 3
+jab:
+  name: "Jab"
+  desc: "Jab them in the gut"
+  smallIcon: media/icons/skills/jab.png
+  largeIcon: media/icons/skills/jab.png
+  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+  instanceCreatorArgs:
+    duration: 2
+chop:
+  name: "Chop"
+  desc: "Bring down your sword atop your opponent with all your might"
+  smallIcon: media/icons/skills/chop.png
+  largeIcon: media/icons/skills/chop.png
+  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+  instanceCreatorArgs:
+    duration: 6
+
+parry:
+  name: "Parry"
+  desc: "Stand your guard and deflect their next attack back onto them"
+  smallIcon: media/icons/skills/parry.png
+  largeIcon: media/icons/skills/parry.png
+  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+  instanceCreatorArgs:
+    duration: 4
+hamstring-slice:
+  name: "Hamstring Slice"
+  desc: "Twirl and slash their lower leg"
+  smallIcon: media/icons/skills/hamstring-slice.png
+  largeIcon: media/icons/skills/hamstring-slice.png
+  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+  instanceCreatorArgs:
+    duration: 2
+dodge:
+  name: "Dodge"
+  desc: "Dodge out of the way and avoid the next attack"
+  smallIcon: media/icons/skills/dodge.png
+  largeIcon: media/icons/skills/dodge.png
+  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+  instanceCreatorArgs:
+    duration: 3
+
+rest:
+  name: "Rest"
+  desc: "Recover from last conditions"
+  smallIcon: media/icons/skills/rest.png
+  largeIcon: media/icons/skills/rest.png
+  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+  instanceCreatorArgs:
+    duration: 2
+heal:
+  name: "Heal"
+  desc: "Regain health"
+  smallIcon: media/icons/skills/heal.png
+  largeIcon: media/icons/skills/heal.png
+  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+  instanceCreatorArgs:
+    duration: 5
