@@ -1,75 +1,94 @@
-do-nothing:
-  name: "Do Nothing"
-  desc: "Just sit there. Doing nothing. Like an idiot."
-  smallIcon: media/icons/skills/do-nothing.png
-  largeIcon: media/icons/skills/do-nothing.png
-  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
-  instanceCreatorArgs:
-    duration: 1
+skills:
+  do-nothing:
+    name: "Do Nothing"
+    description: "Just sit there. Doing nothing. Like an idiot."
+    icons:
+      small: media/icons/skills/do-nothing.png
+      large: media/icons/skills/do-nothing.png
+    combatHandler:
+      creator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+      config: 1
 
-slash:
-  name: "Slash"
-  desc: "Slash at your foe"
-  smallIcon: media/icons/skills/slash.png
-  largeIcon: media/icons/skills/slash.png
-  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
-  instanceCreatorArgs:
-    duration: 3
-jab:
-  name: "Jab"
-  desc: "Jab them in the gut"
-  smallIcon: media/icons/skills/jab.png
-  largeIcon: media/icons/skills/jab.png
-  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
-  instanceCreatorArgs:
-    duration: 2
-chop:
-  name: "Chop"
-  desc: "Bring down your sword atop your opponent with all your might"
-  smallIcon: media/icons/skills/chop.png
-  largeIcon: media/icons/skills/chop.png
-  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
-  instanceCreatorArgs:
-    duration: 6
+  slash:
+    name: "Slash"
+    description: "Slash at your foe"
+    icons:
+      small: media/icons/skills/slash.png
+      large: media/icons/skills/slash.png
+    combatHandler:
+      creator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+      config: 3
+  jab:
+    name: "Jab"
+    description: "Jab them in the gut"
+    icons:
+      small: media/icons/skills/jab.png
+      large: media/icons/skills/jab.png
+    combatHandler:
+      creator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+      config: 2
+  chop:
+    name: "Chop"
+    description: "Bring down your sword atop your opponent with all your might"
+    icons:
+      small: media/icons/skills/chop.png
+      large: media/icons/skills/chop.png
+    combatHandler:
+      creator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+      config: 6
 
-parry:
-  name: "Parry"
-  desc: "Stand your guard and deflect their next attack back onto them"
-  smallIcon: media/icons/skills/parry.png
-  largeIcon: media/icons/skills/parry.png
-  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
-  instanceCreatorArgs:
-    duration: 4
-hamstring-slice:
-  name: "Hamstring Slice"
-  desc: "Twirl and slash their lower leg"
-  smallIcon: media/icons/skills/hamstring-slice.png
-  largeIcon: media/icons/skills/hamstring-slice.png
-  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
-  instanceCreatorArgs:
-    duration: 2
-dodge:
-  name: "Dodge"
-  desc: "Dodge out of the way and avoid the next attack"
-  smallIcon: media/icons/skills/dodge.png
-  largeIcon: media/icons/skills/dodge.png
-  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
-  instanceCreatorArgs:
-    duration: 3
+  parry:
+    name: "Parry"
+    description: "Stand your guard and deflect their next attack back onto them"
+    icons:
+      small: media/icons/skills/parry.png
+      large: media/icons/skills/parry.png
+    combatHandler:
+      creator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+      config: 4
+  hamstring-slice:
+    name: "Hamstring Slice"
+    description: "Twirl and slash their lower leg"
+    icons:
+      small: media/icons/skills/hamstring-slice.png
+      large: media/icons/skills/hamstring-slice.png
+    combatHandler:
+      creator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+      config: 2
+  dodge:
+    name: "Dodge"
+    description: "Dodge out of the way and avoid the next attack"
+    icons:
+      small: media/icons/skills/dodge.png
+      large: media/icons/skills/dodge.png
+    combatHandler:
+      creator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+      config: 3
 
-rest:
-  name: "Rest"
-  desc: "Recover from last conditions"
-  smallIcon: media/icons/skills/rest.png
-  largeIcon: media/icons/skills/rest.png
-  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
-  instanceCreatorArgs:
-    duration: 2
-heal:
-  name: "Heal"
-  desc: "Regain health"
-  smallIcon: media/icons/skills/heal.png
-  largeIcon: media/icons/skills/heal.png
-  instanceCreator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
-  instanceCreatorArgs:
-    duration: 5
+  rest:
+    name: "Rest"
+    description: "Recover from last conditions"
+    icons:
+      small: media/icons/skills/rest.png
+      large: media/icons/skills/rest.png
+    combatHandler:
+      creator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+      config: 2
+  heal:
+    name: "Heal"
+    description: "Regain health"
+    icons:
+      small: media/icons/skills/heal.png
+      large: media/icons/skills/heal.png
+    combatHandler:
+      creator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+      config: 5
+  focus:
+    name: "Focus"
+    description: "Collect your throughts and prepare for battle"
+    icons:
+      small: media/icons/skills/focus.png
+      large: media/icons/skills/focus.png
+    combatHandler:
+      creator: com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator
+      config: 3

@@ -1,7 +1,6 @@
 package com.fisherevans.twc.game.states.combat.skills.creators;
 
-import com.fisherevans.twc.game.rpg.skills.SkillDefinition;
-import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
+import com.fisherevans.twc.game.states.combat.skills.SkillCombatHandler;
 import com.fisherevans.twc.game.states.combat.skills.SkillSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,13 +8,13 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Map;
 
-public class DoNothingCreator implements SkillInstanceCreator {
+public class DoNothingCreator implements SkillCombatHandlerCreator {
     private static final Logger log = LoggerFactory.getLogger(DoNothingCreator.class);
 
     private final int duration;
 
-    public DoNothingCreator(Object yamlArg) {
-        duration = ((Number) ((Map) yamlArg).get("duration")).intValue();
+    public DoNothingCreator(Object config) {
+        duration = ((Number) config).intValue();
     }
 
     public DoNothingCreator(int duration) {
@@ -23,13 +22,12 @@ public class DoNothingCreator implements SkillInstanceCreator {
     }
 
     @Override
-    public SkillInstance create(SkillDefinition definition) {
-        return new SkillInstance(
-                definition,
+    public SkillCombatHandler create() {
+        return new SkillCombatHandler(
                 new SkillSegment(
                         duration,
                         (c) -> Arrays.asList(
-                                () -> log.info(definition.getName() + ": " + c.toString())
+                                () -> log.info(c.toString())
                         )
                 )
         );

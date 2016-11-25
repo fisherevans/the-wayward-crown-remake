@@ -16,5 +16,6 @@ groups:
 
   rest:
     - heal
+    - focus
   heal:
     - heal

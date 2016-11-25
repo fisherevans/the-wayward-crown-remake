@@ -4,38 +4,41 @@ import com.fisherevans.twc.game.states.combat.CombatEnvironment.Action;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 public class SkillSegment {
     private final int duration;
-    private final Function<SegmentNotification, List<Action>> listener;
+    private final SegmentHandler handler;
 
     public SkillSegment(int duration,
-                        final Function<SegmentNotification, List<Action>> start,
-                        final Function<SegmentNotification, List<Action>> interrupt,
-                        final Function<SegmentNotification, List<Action>> end) {
-        this(duration, context -> {
-            Function<SegmentNotification, List<Action>> f = null;
-            switch (context.getEventType()) {
-                case START: f = start; break;
-                case INTERRUPT: f = interrupt; break;
-                case END: f = end; break;
+                        final SegmentHandler start,
+                        final SegmentHandler interrupt,
+                        final SegmentHandler end) {
+        this(duration, notification -> {
+            SegmentHandler handler = null;
+            switch (notification.getEventType()) {
+                case START: handler = start; break;
+                case INTERRUPT: handler = interrupt; break;
+                case END: handler = end; break;
             }
-            return f == null ? Arrays.asList() : f.apply(context);
+            return handler == null ? Arrays.asList() : handler.handle(notification);
         });
     }
 
-    public SkillSegment(int duration, Function<SegmentNotification, List<Action>> listener) {
+    public SkillSegment(int duration, SegmentHandler handler) {
         this.duration = duration;
-        this.listener = listener;
+        this.handler = handler;
     }
 
     public int getDuration() {
         return duration;
     }
 
-    public List<Action> listen(SegmentNotification context) {
-        return listener == null ? Arrays.asList() : listener.apply(context);
+    public SegmentHandler getHandler() {
+        return handler;
+    }
+
+    public interface SegmentHandler {
+        List<Action> handle(SegmentNotification notification);
     }
 }
 

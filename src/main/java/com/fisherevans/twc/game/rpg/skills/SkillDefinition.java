@@ -1,8 +1,8 @@
 package com.fisherevans.twc.game.rpg.skills;
 
-import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
+import com.fisherevans.twc.game.states.combat.skills.SkillCombatHandler;
 import com.fisherevans.twc.game.states.combat.skills.creators.DoNothingCreator;
-import com.fisherevans.twc.game.states.combat.skills.creators.SkillInstanceCreator;
+import com.fisherevans.twc.game.states.combat.skills.creators.SkillCombatHandlerCreator;
 import org.newdawn.slick.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,17 +15,23 @@ public class SkillDefinition {
     private final String id;
     private final String name;
     private final String description;
+
     private final Image smallIcon;
     private final Image largeIcon;
-    private final SkillInstanceCreator skillInstanceCreator;
 
-    public SkillDefinition(String id, String name, String description, Image smallIcon, Image largeIcon, SkillInstanceCreator skillInstanceCreator) {
+    private final SkillCombatHandler combatHandler;
+
+    public SkillDefinition(String id, String name, String description, Image smallIcon, Image largeIcon, SkillCombatHandlerCreator creator) {
+        this(id, name, description, smallIcon, largeIcon, creator.create());
+    }
+
+    public SkillDefinition(String id, String name, String description, Image smallIcon, Image largeIcon, SkillCombatHandler combatHandler) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.smallIcon = smallIcon;
         this.largeIcon = largeIcon;
-        this.skillInstanceCreator = skillInstanceCreator;
+        this.combatHandler = combatHandler;
     }
 
     public String getId() {
@@ -48,8 +54,8 @@ public class SkillDefinition {
         return largeIcon;
     }
 
-    public SkillInstance createInstance() {
-        return skillInstanceCreator.create(this);
+    public SkillCombatHandler getCombatHandler() {
+        return combatHandler;
     }
 
     @Override
@@ -60,7 +66,7 @@ public class SkillDefinition {
                 description,
                 String.valueOf(smallIcon),
                 String.valueOf(largeIcon),
-                skillInstanceCreator == null ? "null" : skillInstanceCreator.getClass().toString());
+                combatHandler == null ? "null" : combatHandler.getClass().toString());
     }
 
     @Override

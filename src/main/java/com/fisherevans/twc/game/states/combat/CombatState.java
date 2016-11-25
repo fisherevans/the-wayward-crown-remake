@@ -8,9 +8,9 @@ import com.fisherevans.twc.game.rpg.skills.SkillDefinition;
 import com.fisherevans.twc.game.rpg.skills.SkillGroup;
 import com.fisherevans.twc.game.rpg.skills.SkillGroup.GraphNode;
 import com.fisherevans.twc.game.states.combat.CombatEvent.EventName;
-import com.fisherevans.twc.game.rpg.PlayerStats;
-import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
+import com.fisherevans.twc.game.rpg.stats.PlayerStats;
 import com.fisherevans.twc.util.MathUtil;
+import com.sun.javafx.scene.control.SizeLimitedList;
 import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class CombatState implements TWCState {
     private static final Logger log = LoggerFactory.getLogger(CombatState.class);
 
-    private int unitDisplayScale = 16;
+    private int unitDisplayScale = 20;
     private float unitTimeScale = 4;
     private float slowTimeAfter = 0.75f;
 
@@ -66,7 +66,7 @@ public class CombatState implements TWCState {
     public CombatState() {
         human = new CombatPlayer(
                 "Human",
-                new PlayerStats(100, 5),
+                PlayerStats.of(100, 5),
                 p -> {
                     GraphNode next = playerNext.getAndSet(null);
                     playerCombo = next == null ? 0 : playerCombo + 1;
@@ -81,12 +81,12 @@ public class CombatState implements TWCState {
                         }
                         expandSkill = null;
                     }
-                    return next == null ? null : next.getSkill().createInstance();
+                    return next == null ? null : next.getSkill();
                 });
         cpu = new CombatPlayer(
                 "CPU",
-                new PlayerStats(100, 3),
-                p -> SkillDefinition.doNothing(MathUtil.randomInt(1, 8)).createInstance());
+                PlayerStats.of(100, 3),
+                p -> SkillDefinition.doNothing(MathUtil.randomInt(1, 8)));
         combatEnvironment = new CombatEnvironment(human, cpu);
     }
 
@@ -124,7 +124,7 @@ public class CombatState implements TWCState {
         float line = game.getRenderContext().width/2f;
         float dx = line - pixelLength;
         renderStack(graphics, game.getRenderContext().actualScale, human, 60, dx, Color.red,
-                playerNext.get() == null ? null : playerNext.get().getSkill().createInstance()); // TODO sloppy
+                playerNext.get() == null ? null : playerNext.get().getSkill());
         renderStack(graphics, game.getRenderContext().actualScale, cpu, 110, dx, Color.cyan, null);
         graphics.setColor(Color.white);
         graphics.drawLine(line, 0, line, game.getRenderContext().height);
@@ -146,43 +146,47 @@ public class CombatState implements TWCState {
         int id = 0;
         for(ActiveSkill activeSkill:skills) {
             graphics.setColor(expandSkill == null || id == expandSkill ? Color.white : Color.darkGray);
+            if(expandSkill == null) {
+                smallFont.drawString(8, y + 3, (id + 1) + "");
+            }
             graphics.drawRect(19, y-1, 18, 18);
             if(activeSkill.active.size() == 1) {
                 SkillDefinition def = activeSkill.active.get(0).getSkill();
                 graphics.drawImage(def.getSmallIcon(), 20, y);
-                smallFont.drawString(40, y+3, def.getName());
+                smallFont.drawString(46, y+3, def.getName());
             } else {
-                smallFont.drawString(40, y+3, "Multiple...");
+                smallFont.drawString(46, y+3, "Multiple...");
             }
             y += 20;
             id++;
         }
 
         y = 170;
-        int x = (int) (game.getRenderContext().width/2) + 20;
+        int x = (int) (game.getRenderContext().width/2);
         if(expandSkill != null) {
             ActiveSkill activeSkill = skills.get(expandSkill);
             id = 0;
             for(GraphNode node:activeSkill.active) {
                 graphics.setColor(Color.white);
-                graphics.drawRect(x, y-1, 18, 18);
-                graphics.drawImage(node.getSkill().getSmallIcon(), x, y);
-                smallFont.drawString(x+20, y+3, node.getSkill().getName());
+                smallFont.drawString(x + 8, y + 3, (id + 1) + "");
+                graphics.drawRect(x+20, y-1, 18, 18);
+                graphics.drawImage(node.getSkill().getSmallIcon(), x+20, y);
+                smallFont.drawString(x+46, y+3, node.getSkill().getName());
                 y += 20;
                 id++;
             }
         }
     }
 
-    private void renderStack(Graphics graphics, float preScale, CombatPlayer player, float y, float dx, Color color, SkillInstance queuedSkill) {
+    private void renderStack(Graphics graphics, float preScale, CombatPlayer player, float y, float dx, Color color, SkillDefinition queuedSkill) {
         int padding = 2;
         graphics.setColor(color);
         playerFont.drawString(20, y, player.getName(), color);
 
         class SkillRenderObject {
-            public final SkillInstance skill;
+            public final SkillDefinition skill;
             public final Color color;
-            public SkillRenderObject(SkillInstance skill, Color color) {
+            public SkillRenderObject(SkillDefinition skill, Color color) {
                 this.skill = skill;
                 this.color = color;
             }
@@ -197,11 +201,15 @@ public class CombatState implements TWCState {
             renderList.add(new SkillRenderObject(queuedSkill, color.scaleCopy(0.5f)));
         }
 
+        float sy = y + playerFont.getLineHeight()*1.15f;
         graphics.setLineWidth(preScale*2);
         for(SkillRenderObject sro:renderList) {
-            int width = sro.skill.getTotalSegmentDuration() * unitDisplayScale;
+            int width = sro.skill.getCombatHandler().getTotalDuration() * unitDisplayScale;
             graphics.setColor(sro.color);
-            graphics.drawRect(dx + padding, y + playerFont.getLineHeight()*1.15f, width - (padding*2), unitDisplayScale - padding*2);
+            graphics.drawRect(dx + padding, sy, width - (padding*2), unitDisplayScale - padding*2);
+            if(sro.skill.getSmallIcon() != null) {
+                graphics.drawImage(sro.skill.getSmallIcon(), dx + padding, sy);
+            }
             dx += width;
         }
     }

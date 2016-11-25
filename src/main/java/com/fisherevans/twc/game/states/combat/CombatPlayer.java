@@ -1,7 +1,8 @@
 package com.fisherevans.twc.game.states.combat;
 
-import com.fisherevans.twc.game.rpg.PlayerStats;
-import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
+import com.fisherevans.twc.game.rpg.stats.PlayerStats;
+import com.fisherevans.twc.game.rpg.skills.SkillDefinition;
+import com.fisherevans.twc.game.rpg.stats.StatsModifier;
 import com.fisherevans.twc.game.states.combat.skills.SkillSegment;
 
 import java.util.ArrayList;
@@ -10,35 +11,38 @@ import java.util.List;
 
 public class CombatPlayer implements Comparable<CombatPlayer> {
     private static final Comparator<CombatPlayer> COMPARATOR = Comparator
-            .comparing(CombatPlayer::getStats)
+            .comparing(CombatPlayer::getEffectiveStats)
+            .thenComparing(CombatPlayer::getBaseStats)
             .thenComparing((a, b) -> Math.random() > 5 ? 1 : -1); // TODO randomly resolving play priority...
 
     private final String name;
-    private final PlayerStats stats;
     private final SkillProvider skillProvider;
-    private final List<SkillInstance> executedSkills;
+    private final List<SkillDefinition> executedSkills;
 
-    private SkillInstance currentSkill;
+    private SkillDefinition currentSkill;
     private SkillSegment currentSegment;
 
-    public CombatPlayer(String name, PlayerStats stats, SkillProvider skillProvider) {
+    private final StatsModifier statsModifier;
+    private final PlayerStats baseStats, effectiveStats;
+
+
+    public CombatPlayer(String name, PlayerStats baseStats, SkillProvider skillProvider) {
         this.name = name;
-        this.stats = stats;
+        this.baseStats = baseStats;
         this.skillProvider = skillProvider;
         this.executedSkills = new ArrayList();
 
         this.currentSkill = null;
+
+        this.statsModifier = new StatsModifier();
+        this.effectiveStats = baseStats.joinedWith(statsModifier.asPlayerStats());
     }
 
     public String getName() {
         return name;
     }
 
-    public PlayerStats getStats() {
-        return stats;
-    }
-
-    public List<SkillInstance> getExecutedSkills() {
+    public List<SkillDefinition> getExecutedSkills() {
         return executedSkills;
     }
 
@@ -46,11 +50,11 @@ public class CombatPlayer implements Comparable<CombatPlayer> {
         return skillProvider;
     }
 
-    public void setCurrentSkill(SkillInstance currentSkill) {
+    public void setCurrentSkill(SkillDefinition currentSkill) {
         this.currentSkill = currentSkill;
     }
 
-    public SkillInstance getCurrentSkill() {
+    public SkillDefinition getCurrentSkill() {
         return currentSkill;
     }
 
@@ -62,18 +66,30 @@ public class CombatPlayer implements Comparable<CombatPlayer> {
         this.currentSegment = currentSegment;
     }
 
+    public PlayerStats getBaseStats() {
+        return baseStats;
+    }
+
+    public StatsModifier getStatsModifier() {
+        return statsModifier;
+    }
+
+    public PlayerStats getEffectiveStats() {
+        return effectiveStats;
+    }
+
     @Override
     public int compareTo(CombatPlayer other) {
         return COMPARATOR.compare(this, other);
     }
 
     public String toString() {
-        return String.format("CombatPlayer[name=%s,stats=%s]",
+        return String.format("CombatPlayer[name=%s,baseStats=%s]",
                 getName(),
-                getStats().toString());
+                getBaseStats().toString());
     }
 
-    public static interface SkillProvider {
-        SkillInstance nextSkill(CombatPlayer owner);
+    public interface SkillProvider {
+        SkillDefinition nextSkill(CombatPlayer owner);
     }
 }

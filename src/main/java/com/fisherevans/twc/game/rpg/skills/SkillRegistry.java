@@ -1,6 +1,6 @@
 package com.fisherevans.twc.game.rpg.skills;
 
-import com.fisherevans.twc.game.states.combat.skills.creators.SkillInstanceCreator;
+import com.fisherevans.twc.game.states.combat.skills.creators.SkillCombatHandlerCreator;
 import com.fisherevans.twc.util.imut_col.ImmutableSet;
 import org.newdawn.slick.Image;
 import org.slf4j.Logger;
@@ -39,28 +39,25 @@ public class SkillRegistry {
     }
 
     public static SkillRegistry loadFromYaml(URL url) throws IOException {
-        InputStream is = null;
+        InputStream is = url.openStream();
         try {
             log.info(String.valueOf(url));
-            is = url.openStream();
-            Yaml yaml = new Yaml();
             Map<String, SkillDefinition> skills = new HashMap();
-            Map config = (Map) yaml.load(is);
-            log.info("Got config: " + String.valueOf(config));
-            for (Object key : config.keySet()) {
-                Map value = (Map) config.get(key);
+            SkillsFile file = new Yaml().loadAs(is, SkillsFile.class);
+            for(String skillId:file.skills.keySet()) {
+                SkillYaml skillYaml = file.skills.get(skillId);
                 SkillDefinition skill = new SkillDefinition(
-                        (String) key,
-                        (String) value.get("name"),
-                        (String) value.get("desc"),
-                        getImage((String) value.get("smallIcon")),
-                        getImage((String) value.get("largeIcon")),
+                        skillId,
+                        skillYaml.name,
+                        skillYaml.description,
+                        getImage(skillYaml.icons.small),
+                        getImage(skillYaml.icons.large),
                         getCreator(
-                                (String) value.get("instanceCreator"),
-                                value.get("instanceCreatorArgs")
+                                skillYaml.combatHandler.creator,
+                                skillYaml.combatHandler.config
                         )
                 );
-                skills.put(skill.getId(), skill);
+                skills.put(skillId, skill);
             }
             return new SkillRegistry(skills);
         } finally {
@@ -70,10 +67,10 @@ public class SkillRegistry {
         }
     }
 
-    private static SkillInstanceCreator getCreator(String path, Object args) {
+    private static SkillCombatHandlerCreator getCreator(String path, Object args) {
         try {
             Class clazz = Class.forName(path);
-            return (SkillInstanceCreator) (args == null
+            return (SkillCombatHandlerCreator) (args == null
                     ? clazz.getConstructor().newInstance()
                     : clazz.getConstructor(Object.class).newInstance(args));
         } catch (Exception e) {
@@ -87,5 +84,28 @@ public class SkillRegistry {
         } catch (Exception e) {
             throw new RuntimeException("Failed to load image for :" + path, e);
         }
+    }
+
+    public static class SkillsFile {
+        public Map<String, SkillYaml> skills;
+        public SkillsFile() { }
+    }
+
+    public static class SkillYaml {
+        public String name, description;
+        public SkillIcons icons;
+        public SkillCombatDef combatHandler;
+        public SkillYaml() { }
+    }
+
+    public static class SkillIcons {
+        public String small, large;
+        SkillIcons() { }
+    }
+
+    public static class SkillCombatDef {
+        public String creator;
+        public Object config;
+        public SkillCombatDef() { }
     }
 }

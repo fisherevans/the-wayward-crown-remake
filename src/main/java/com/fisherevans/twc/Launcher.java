@@ -69,7 +69,7 @@ public class Launcher {
     public static void main(String[] args) throws Exception {
         loadLibraries();
         redirectLogs();
-        final Launcher launcher = new Launcher(new RenderContext(2), false);
+        final Launcher launcher = new Launcher(new RenderContext(4), false);
         launcher.start();
     }
 }

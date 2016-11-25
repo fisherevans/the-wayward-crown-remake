@@ -1,8 +1,9 @@
 package com.fisherevans.twc.game.states.combat;
 
+import com.fisherevans.twc.game.rpg.skills.SkillDefinition;
 import com.fisherevans.twc.game.states.combat.CombatEvent.EventName;
 import com.fisherevans.twc.game.states.combat.skills.SegmentNotification.NotificationType;
-import com.fisherevans.twc.game.states.combat.skills.SkillInstance;
+import com.fisherevans.twc.game.states.combat.skills.SkillCombatHandler;
 import com.fisherevans.twc.game.states.combat.skills.SkillSegment;
 import com.fisherevans.twc.game.states.combat.skills.SegmentNotification;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class CombatEnvironment {
                 case END:
                 case START: {
                     player.setCurrentSegment(event.getSegment());
-                    event.getSegment().listen(new SegmentNotification(
+                    event.getSegment().getHandler().handle(new SegmentNotification(
                             this,
                             event.getEventName() == EventName.START ? NotificationType.START : NotificationType.END,
                             player, getOpponent(player))
@@ -47,7 +48,7 @@ public class CombatEnvironment {
                     break;
                 }
                 case QUEUE_NEXT: {
-                    SkillInstance nextSkill = player.getSkillProvider().nextSkill(player);
+                    SkillDefinition nextSkill = player.getSkillProvider().nextSkill(player);
                     if(nextSkill == null) {
                         // if one can't be found - set the new time to "now" to end the loop
                         // DON'T DELETE FROM STACK
@@ -58,7 +59,7 @@ public class CombatEnvironment {
                         }
                         player.setCurrentSkill(nextSkill);
                         player.setCurrentSegment(null);
-                        queueSegments(player, nextSkill, event.getTime());
+                        queueSegments(player, nextSkill.getCombatHandler(), event.getTime());
                         eventStack.pollFirst();
                     }
                     break;
@@ -68,7 +69,7 @@ public class CombatEnvironment {
         timePassed = executeUntil;
     }
 
-    private void queueSegments(CombatPlayer player, SkillInstance skill, int time) {
+    private void queueSegments(CombatPlayer player, SkillCombatHandler skill, int time) {
         for(SkillSegment segment:skill.getSegments()) {
             eventStack.add(new CombatEvent(player, skill, segment, EventName.START, time));
             time += segment.getDuration();
